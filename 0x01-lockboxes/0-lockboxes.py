@@ -1,10 +1,8 @@
 #!/usr/bin/python3
-
 """ Can all Lockboxes be unlocked """
 
-
 def canUnlockAll(boxes):
-    """ returns true if all boxes can be unlocked 
+    """ returns true if all boxes can be unlocked
         key will have to be same number as a box to
         unlock the box and box[0] is already unlocked
     """
