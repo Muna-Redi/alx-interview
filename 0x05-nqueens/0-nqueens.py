@@ -1,110 +1,121 @@
 #!/usr/bin/python3
-"""solution to N Queens"""
+""" solution of N queens"""
+
 import sys
-from pprint import pprint
 
 
-def conv_to_perm(board):
-    """Print one of the permutations of the result
+def print_board(board):
+    """ print_board
+    Args:
+        board - list of list with length sys.argv[1]
     """
-    if not board or len(board) == 0:
-        return
+    new_list = []
+    for i, row in enumerate(board):
+        value = []
+        for j, col in enumerate(row):
+            if col == 1:
+                value.append(i)
+                value.append(j)
+        new_list.append(value)
 
-    result = []
-    for row in range(len(board)):
-        col = board[row].index(1)
-        result.append(col)
-
-    return result
+    print(new_list)
 
 
-def conv_to_soln(board):
-    """Print ALX acceptable solution of the result
+def isSafe(board, row, col, number):
+    """ isSafe
+    Args:
+        board - list of list with length sys.argv[1]
+        row - row to check if is safe doing a movement in this position
+        col - col to check if is safe doing a movement in this position
+        number: size of the board
+    Return: True of False
     """
-    if not board or len(board) == 0:
-        return
 
-    result = []
-    for row in range(len(board)):
-        col = board[row].index(1)
-        result.append([row, col])
-
-    return result
-
-
-def is_safe(board, row, col):
-    """Check if the current board setting is safe for all queens
-    """
-    # Check horizontally across and leftwards
+    # Check this row in the left side
     for i in range(col):
         if board[row][i] == 1:
             return False
 
-    # Check diagonally left and upwards
-    for r, c in zip(range(row, -1, -1), range(col, -1, -1)):
-        if board[r][c] == 1:
+    # Check upper diagonal on left side
+    for i, j in zip(range(row, -1, -1), range(col, -1, -1)):
+        if board[i][j] == 1:
             return False
 
-    # Check diagonally left and downwards
-    for r, c in zip(range(row, len(board), 1), range(col, -1, -1)):
-        if board[r][c] == 1:
+    for i, j in zip(range(row, number, 1), range(col, -1, -1)):
+        if board[i][j] == 1:
             return False
 
     return True
 
 
-def solveNQ(board, col):
-    """Solve the N Queen problem for a board starting from cell (0, 0)
+def solveNQUtil(board, col, number):
+    """ Auxiliar method to find the posibilities of answer
+    Args:
+        board - Board to resolve
+        col - Number of col
+        number - size of the board
+    Returns:
+        All the posibilites to solve the problem
     """
-    if col >= len(board):
+
+    if (col == number):
+        print_board(board)
         return True
+    res = False
+    for i in range(number):
 
-    for row in range(len(board)):
-        if is_safe(board, row, col):
-            # Place the queen in this position
-            board[row][col] = 1
+        if (isSafe(board, i, col, number)):
 
-            # Recursively attempt to place the rest of the queens
-            if solveNQ(board, col + 1) is True:
-                return True
+            # Place this queen in board[i][col]
+            board[i][col] = 1
 
-            # If that didn't, nullify the current Queen's position
-            board[row][col] = 0
+            # Make result true if any placement
+            # is possible
+            res = solveNQUtil(board, col + 1, number) or res
 
-    return False
+            board[i][col] = 0  # BACKTRACK
+
+    return res
 
 
-def get_board(size):
-    """Create and return the Chess board to solve
+def solve(number):
+    """ Find all the posibilities if exists
+    Args:
+        number - size of the board
     """
-    board = []
-    for i in range(size):
-        row = []
-        for x in range(size):
-            row.append(0)
-        board.append(row)
+    board = [[0 for i in range(number)]for i in range(number)]
 
-    return board
+    if not solveNQUtil(board, 0, number):
+        return False
+
+    return True
 
 
-if __name__ == '__main__':
-    MIN_QUEENS = 4
-
-    arg_len = len(sys.argv) - 1
-    if arg_len != 1:
+def validate(args):
+    """ Validate the input data to verify if the size to
+        answer is posible
+    Args:
+        args - sys.argv
+    """
+    if (len(args) == 2):
+        # Validate data
+        try:
+            number = int(args[1])
+        except Exception:
+            print("N must be a number")
+            exit(1)
+        if number < 4:
+            print("N must be at least 4")
+            exit(1)
+        return number
+    else:
         print("Usage: nqueens N")
         exit(1)
 
-    arg = sys.argv[1]
-    if not arg.isdecimal():
-        print("N must be a number")
-        exit(1)
 
-    arg = int(arg)
-    if arg < MIN_QUEENS:
-        print("N must be at least 4")
-        exit(1)
+if __name__ == "__main__":
+    """ Main method to execute the application
+    """
 
-    board = get_board(arg)
-    result = solveNQ(board, 0)
-    pprint(conv_to_soln(board))
+    number = validate(sys.argv)
+    solve(number)
