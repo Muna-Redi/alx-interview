@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""placing N Queens  on NxN chessboard"""
+"""placement queen on chessboard"""
 
 
 import sys
@@ -8,13 +8,13 @@ import sys
 def generate_solutions(row, column):
     solution = [[]]
     for queen in range(row):
-        solution = put_queen(queen, column, solution)
+        solution = place_queen(queen, column, solution)
     return solution
 
 
-def put_queen(queen, column, prev_sol):
+def place_queen(queen, column, prev_solution):
     safe_position = []
-    for array in prev_sol:
+    for array in prev_solution:
         for x in range(column):
             if is_safe(queen, x, array):
                 safe_position.append(array + [x])
